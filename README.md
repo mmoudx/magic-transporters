@@ -13,7 +13,6 @@ Welcome to the Magic Transporters API! This API manages magic movers and magic i
 - [License](#license)
 
 ## Features
-
 - **Magic Movers Management**: 
   - Add new magic movers.
   - Load items to magic movers, creating a database log of this activity (loading state).
@@ -39,7 +38,6 @@ Welcome to the Magic Transporters API! This API manages magic movers and magic i
 
 - **DI using tsyringe**: 
   - Dependency Injection using `tsyringe` to manage dependencies and improve code modularity and testability.
-
 
 ## Prerequisites
 
@@ -76,14 +74,15 @@ MONGODB_URI=mongodb://localhost:27017/magic_transporters_db
 ```
 Adjust the `MONGODB_URI` according to your MongoDB setup.
 
+5. **seed the database:**
+```bash
+npm seed
+```
+
 ## Running the Application
 ### Using Node.js
 ```bash
 npm start
-# or
-pnpm start
-# or
-yarn start
 ```
 ### Using Docker
 You can run the Magic Transporters API using Docker for easier setup and deployment.
@@ -103,10 +102,12 @@ docker-compose up --build
 ```
 This command will build the Docker image and start both the application and MongoDB containers.
 
-2. Stop the containers:
+2. seed the database:
 ```bash
-docker-compose down
+docker exec -it magic-transporters-api npm run seed
 ```
+
+3. Access the application:
 The API will be accessible at `http://localhost:3000`.
 
 ## Testing
@@ -115,10 +116,6 @@ This project uses Jest for testing, To run the tests, use the following command:
 
 ```bash
 npm test
-# or
-pnpm test
-# or
-yarn test
 ```
 
 ## Usage
