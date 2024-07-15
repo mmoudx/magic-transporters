@@ -14,10 +14,32 @@ Welcome to the Magic Transporters API! This API manages magic movers and magic i
 
 ## Features
 
-- **Magic Movers Management**: Add, load items, start, and end missions for magic movers.
-- **Magic Items Management**: Add and list magic items with name and weight.
-- **Validation**: Input validation for adding magic movers and items.
-- **Swagger Documentation**: API endpoints are documented using Swagger for easy reference.
+- **Magic Movers Management**: 
+  - Add new magic movers.
+  - Load items to magic movers, creating a database log of this activity (loading state).
+  - Start a mission by updating the magic mover's state to "on-mission" and preventing further loading of items. This also creates a database log of this activity (on-mission state).
+  - End a mission by unloading all items from the magic mover and creating a database log of this activity, returning the mover to a "resting" state.
+  - Fetch the list of magic movers who have completed the most missions, sorted in descending order.
+
+- **Magic Items Management**: 
+  - Add new magic items with attributes such as name and weight.
+  - List all magic items.
+
+- **Validation**: 
+  - Input validation for adding magic movers and items to ensure data integrity.
+
+- **Error Handling**: 
+  - Robust error handling to gracefully manage and respond to errors in the API.
+
+- **Swagger Documentation**: 
+  - API endpoints are documented using Swagger, providing an interactive interface for developers to understand and test the API.
+
+- **e2e Jest Testing**: 
+  - End-to-end testing using Jest to ensure the reliability and correctness of the API.
+
+- **DI using tsyringe**: 
+  - Dependency Injection using `tsyringe` to manage dependencies and improve code modularity and testability.
+
 
 ## Prerequisites
 
@@ -54,7 +76,8 @@ MONGODB_URI=mongodb://localhost:27017/magic_transporters_db
 ```
 Adjust the `MONGODB_URI` according to your MongoDB setup.
 
-5. **Start the server:**
+## Running the Application
+### Using Node.js
 ```bash
 npm start
 # or
@@ -62,18 +85,18 @@ pnpm start
 # or
 yarn start
 ```
-## Docker
+### Using Docker
 You can run the Magic Transporters API using Docker for easier setup and deployment.
 
-### Build the Docker image:
+#### Build the Docker image:
 ```bash
 docker build -t magic-transporters-api .
 ```
-### Run the Docker container:
+#### Run the Docker container:
 ```bash
 docker run -d -p 3000:3000 --name magic-transporters-api magic-transporters-api
 ```
-### Using Docker Compose:
+#### Using Docker Compose:
 1. Build and start the containers:
 ```bash
 docker-compose up --build
@@ -85,12 +108,25 @@ This command will build the Docker image and start both the application and Mong
 docker-compose down
 ```
 The API will be accessible at `http://localhost:3000`.
+
+## Testing
+### Running Tests with Jest
+This project uses Jest for testing, To run the tests, use the following command:
+
+```bash
+npm test
+# or
+pnpm test
+# or
+yarn test
+```
+
 ## Usage
 - Use tools like Postman or curl to interact with the API endpoints.
 - Refer to the API Documentation section for details on available endpoints and their usage.
 
 ## API Documentation
-Explore the API using Swagger documentation:
+Explore the API using **Swagger** documentation (after running the server):
 - Local: `http://localhost:3000/api-docs`
 
 ## License
