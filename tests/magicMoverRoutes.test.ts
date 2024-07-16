@@ -1,7 +1,6 @@
 import request from 'supertest';
 import app from '../src/app'; 
 import { MagicMover } from '../src/models/MagicMover';
-import { MagicItem } from '../src/models/MagicItem';
 import mongoose from 'mongoose'; 
 
 
@@ -63,7 +62,6 @@ describe('Magic Mover Controllers', () => {
 
     const loadRequestData = {
       itemIds: [newItemRes.body._id],
-      quantity: 1
     };
 
     const res = await request(app)
@@ -74,17 +72,16 @@ describe('Magic Mover Controllers', () => {
     expect(res.body).toHaveProperty('questState', 'loading');
     expect(res.body.loadedItems).toHaveLength(1);
     expect(res.body.loadedItems[0].item).toBe(newItemRes.body._id);
-    expect(res.body.loadedItems[0].quantity).toBe(loadRequestData.quantity);
   });
 
 it('POST /api/magic-movers/:moverId/start-mission should start a mission for a Magic Mover', async () => {
   const testMover = new MagicMover({
     name: 'Test Mover',
     weightLimit: 200,
-    questState: 'loading' // Set to loading state for test
+    questState: 'loading'
   });
   await testMover.save();
-  const testMoverId = testMover._id; // Ensure testMoverId is defined here
+  const testMoverId = testMover._id; 
 
   const res = await request(app)
     .post(`/api/magic-movers/${testMoverId}/start-mission`) // Pass testMoverId as part of URL
@@ -98,13 +95,13 @@ it('POST /api/magic-movers/:moverId/end-mission should end a mission for a Magic
     const testMover = new MagicMover({
       name: 'Test Mover',
       weightLimit: 200,
-      questState: 'on-mission' // Set to on-mission state for test
+      questState: 'on-mission' 
     });
     await testMover.save();
-    const testMoverId = testMover._id; // Ensure testMoverId is defined here
+    const testMoverId = testMover._id; 
   
     const res = await request(app)
-      .post(`/api/magic-movers/${testMoverId}/end-mission`) // Pass testMoverId as part of URL
+      .post(`/api/magic-movers/${testMoverId}/end-mission`)
       .expect(200);
   
     expect(res.body).toHaveProperty('questState', 'resting');

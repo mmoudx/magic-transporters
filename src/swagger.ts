@@ -45,10 +45,6 @@ const options = {
                     type: 'string',
                     example: 'item1'
                   },
-                  quantity: {
-                    type: 'number',
-                    example: 2
-                  }
                 }
               }
             }
