@@ -9,7 +9,6 @@ Welcome to the Magic Transporters API! This API manages magic movers and magic i
 - [Installation](#installation)
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## Features
