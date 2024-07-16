@@ -20,8 +20,8 @@ export const addMagicItem = async (req: Request, res: Response): Promise<void> =
 
     const magicItem = await magicItemService.addMagicItem(req.body);
     res.status(201).send(magicItem);
-  } catch (error) {
-    res.status(400).send(error);
+  } catch (error:any) {
+    res.status(400).send({ message: error.message });
   }
 };
 
@@ -35,8 +35,8 @@ export const listMagicItems = async (_req: Request, res: Response): Promise<void
   try {
     const magicItems = await magicItemService.listMagicItems();
     res.status(200).send(magicItems);
-  } catch (error) {
-    res.status(400).send(error);
+  } catch (error:any) {
+    res.status(400).send({ message: error.message });
   }
 };
 

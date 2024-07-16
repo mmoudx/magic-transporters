@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document, Types } from 'mongoose';
 
 /**
  * Interface representing a Magic Mover document.
@@ -9,7 +9,7 @@ export interface IMagicMover extends Document {
   weightLimit: number;
   questState: 'resting' | 'loading' | 'on-mission';
   completedMissions: number;
-  loadedItems: Array<{ item: Schema.Types.ObjectId; quantity: number }>;
+  loadedItems: Array<{ item: Types.ObjectId}>;
 }
 
 /**
@@ -20,7 +20,7 @@ const MagicMoverSchema = new Schema<IMagicMover>({
   weightLimit: { type: Number, required: true },
   questState: { type: String, enum: ['resting', 'loading', 'on-mission'], default: 'resting' },
   completedMissions: { type: Number, default: 0 },
-  loadedItems: [{ item: { type: Schema.Types.ObjectId, ref: 'Item' }, quantity: Number }]
+  loadedItems: [{ item: { type: Schema.Types.ObjectId, ref: 'MagicItem' }}]
 });
 
 /**
