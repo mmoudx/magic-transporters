@@ -5,7 +5,8 @@ import {
   loadMagicMover,
   startMission,
   endMission,
-  listTopMagicMovers
+  listTopMagicMovers,
+  getOneMagicMover
 } from '../controllers/magicMoverController';
 import {
   validateMagicMover,
@@ -14,6 +15,41 @@ import {
 } from '../middlewares/validators';
 
 const router = Router();
+
+/**
+ * @swagger
+ * tags:
+ *   name: MagicMovers
+ *   description: API for managing magic movers
+ */
+
+/**
+ * @swagger
+ * /magic-movers/{moverId}:
+ *   get:
+ *     summary: Get a magic mover by ID
+ *     tags: [MagicMovers]
+ *     parameters:
+ *       - in: path
+ *         name: moverId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the magic mover
+ *     responses:
+ *       200:
+ *         description: The found magic mover
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MagicMover'
+ *       404:
+ *         description: Magic Mover not found
+ *       400:
+ *         description: Bad request
+ */
+
+router.get('/magic-movers/:moverId', getOneMagicMover);
 
 /**
  * @swagger
@@ -89,9 +125,6 @@ router.post('/magic-movers', validateMagicMover, addMagicMover);
  *                 items:
  *                   type: string
  *                 example: ["item1", "item2"]
- *               quantity:
- *                 type: number
- *                 example: 2
  *     responses:
  *       200:
  *         description: The updated magic mover

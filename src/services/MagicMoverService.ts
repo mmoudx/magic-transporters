@@ -1,7 +1,7 @@
 import { injectable } from 'tsyringe';
 import { MagicMover, IMagicMover } from '../models/MagicMover';
-import { MagicItem } from '../models/MagicItem';
-import { Schema } from 'mongoose';
+import {  MagicItem } from '../models/MagicItem';
+import { Types } from 'mongoose';
 
 /**
  * Service class for handling operations related to Magic Movers.
@@ -9,7 +9,19 @@ import { Schema } from 'mongoose';
  */
 @injectable()
 export class MagicMoverService {
-  
+/**
+ * Find a Magic Mover by ID.
+ * @param moverId - ID of the Magic Mover.
+ * @returns The found Magic Mover or null if not found.
+ */
+ async  getOneMagicMover(moverId: string): Promise<IMagicMover | null> {
+  if (!Types.ObjectId.isValid(moverId)) {
+    throw new Error('Invalid ID format');
+  }
+
+  return await MagicMover.findById(moverId).populate('loadedItems.item');
+}
+
   /**
    * Retrieves all Magic Movers from the database.
    * @returns {Promise<IMagicMover[]>} A promise that resolves to an array of Magic Movers.
@@ -38,50 +50,48 @@ export class MagicMoverService {
     }
   }
 
-  /**
-   * Loads items onto a Magic Mover, updating its state and loaded items.
-   * @param {string} moverId - The ID of the Magic Mover to load items onto.
-   * @param {string[]} itemIds - The IDs of the items to load.
-   * @param {number} quantity - The quantity of each item to load.
-   * @returns {Promise<IMagicMover | null>} A promise that resolves to the updated Magic Mover.
-   * @throws {Error} If the Magic Mover is not found, is not in resting state, or weight limit is exceeded.
-   */
-  async loadMagicMover(moverId: string, itemIds: string[], quantity: number): Promise<IMagicMover | null> {
-    const magicMover = await MagicMover.findById(moverId);
-    if (!magicMover) {
-      throw new Error('Mover not found');
-    }
-    if (magicMover.questState !== 'resting') {
-      throw new Error('Mover is not in resting state');
-    }
-
-    // Calculate the total weight of the items with the given quantity
-    const items = await MagicItem.find({ '_id': { $in: itemIds } });
-    let totalWeight = items.reduce((sum, item) => sum + item.weight * quantity, 0);
-
-    // Check if the total weight exceeds the MagicMover's weight limit
-    if (totalWeight > magicMover.weightLimit) {
-      throw new Error('Weight limit exceeded');
-    }
-
-    // Update the MagicMover's state to loading
-    magicMover.questState = 'loading';
-
-    // Add the items to the MagicMover's loadedItems with the specified quantity
-    items.forEach(item => {
-      const existingItemIndex = magicMover.loadedItems.findIndex(
-        loadedItem => loadedItem.item === item._id);
-
-      if (existingItemIndex > -1) {
-        magicMover.loadedItems[existingItemIndex].quantity += quantity;
-      } else {
-        magicMover.loadedItems.push({ item: item._id as Schema.Types.ObjectId, quantity });
-      }
-    });
-
-    // Save the updated MagicMover and return it
-    return await magicMover.save();
+/**
+ * Load a Magic Mover with items.
+ * @param moverId - ID of the Magic Mover.
+ * @param itemIds - Array of item IDs to load onto the Magic Mover.
+ * @returns The updated Magic Mover.
+ * @throws Error if the mover is not found, is not in the resting state or weight limit is exceeded.
+ */
+async loadMagicMover(moverId: string, itemIds: string[]): Promise<IMagicMover | null> {
+  
+  // Find the Magic Mover by ID
+  const magicMover = await MagicMover.findById(moverId);
+  if (!magicMover) {
+    throw new Error('Mover not found');
   }
+
+  // Check if the Magic Mover is in the resting state
+  if (magicMover.questState !== 'resting') {
+    throw new Error('Mover is not in resting state');
+  }
+  
+  // Fetch the Magic Items by their IDs
+  const items = await MagicItem.find({ '_id': { $in: itemIds.map(id => new Types.ObjectId(id)) } });
+
+  // Calculate the total weight of the items
+  const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
+
+  // Check if the total weight exceeds the Magic Mover's weight limit
+  if (totalWeight > magicMover.weightLimit) {
+    throw new Error('Weight limit exceeded');
+  }
+
+  // Update the Magic Mover's state to loading
+  magicMover.questState = 'loading';
+
+  // Add the items to the Magic Mover's loadedItems
+  items.forEach(item => {
+    magicMover.loadedItems.push({ item: item._id as Types.ObjectId });
+  });
+
+  // Save the updated Magic Mover and return it
+  return await magicMover.save();
+}
 
   /**
    * Starts a mission for a Magic Mover by updating its state to 'on-mission'.
@@ -98,6 +108,7 @@ export class MagicMoverService {
       }
 
       if (magicMover.questState !== 'loading') {
+        console.log(magicMover.questState);
         throw new Error('Magic Mover is not in loading state');
       }
 

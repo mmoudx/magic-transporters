@@ -1,9 +1,29 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
 import { MagicMoverService } from '../services/MagicMoverService';
-import { IMagicMover } from '../models/MagicMover';
 
 const magicMoverService = container.resolve(MagicMoverService);
+
+/**
+ * Controller to find a Magic Mover by ID.
+ * @param req - Express request object.
+ * @param res - Express response object.
+ */
+export const getOneMagicMover = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { moverId } = req.params;
+    const magicMover = await magicMoverService.getOneMagicMover(moverId);
+
+    if (!magicMover) {
+      res.status(404).send({ message: 'Magic Mover not found' });
+      return;
+    }
+
+    res.status(200).send(magicMover);
+  } catch (error:any) {
+    res.status(400).send({ message: error.message });
+  }
+};
 
 /**
  * Get all magic movers.
@@ -15,8 +35,8 @@ export const getAllMagicMovers = async (req: Request, res: Response): Promise<vo
   try {
     const magicMovers = await magicMoverService.getAllMagicMovers();
     res.status(200).send(magicMovers);
-  } catch (error) {
-    res.status(400).send(error);
+  } catch (error:any) {
+    res.status(400).send({ message: error.message });
   }
 };
 
@@ -31,8 +51,8 @@ export const addMagicMover = async (req: Request, res: Response): Promise<void> 
   try {
     const magicMover = await magicMoverService.addMagicMover(req.body);
     res.status(201).send(magicMover);
-  } catch (error) {
-    res.status(400).send(error);
+  } catch (error:any) {
+    res.status(400).send({ message: error.message });
   }
 };
 
@@ -40,18 +60,18 @@ export const addMagicMover = async (req: Request, res: Response): Promise<void> 
 /**
  * Load items onto a magic mover.
  * POST /api/magic-movers/:moverId/load
- * @param req Request object containing the moverId in params and itemIds, quantity in req.body
+ * @param req Request object containing the moverId in params and itemIds in req.body
  * @param res Response object to send back the updated magic mover or error response
  */
 export const loadMagicMover = async (req: Request, res: Response): Promise<void> => {
   try {
     const { moverId } = req.params;
-    const { itemIds, quantity } = req.body;
+    const { itemIds } = req.body;
 
-    const magicMover = await magicMoverService.loadMagicMover(moverId, itemIds, quantity);
+    const magicMover = await magicMoverService.loadMagicMover(moverId, itemIds);
     res.status(200).send(magicMover);
-  } catch (error) {
-    res.status(400).send(error);
+  } catch (error:any) {
+    res.status(400).send({ message: error.message });
   }
 };
 
@@ -67,8 +87,8 @@ export const startMission = async (req: Request, res: Response): Promise<void> =
     const { moverId } = req.params;
     const magicMover = await magicMoverService.startMission(moverId);
     res.status(200).send(magicMover);
-  } catch (error) {
-    res.status(400).send(error);
+  } catch (error:any) {
+    res.status(400).send({ message: error.message });
   }
 };
 
@@ -85,8 +105,8 @@ export const endMission = async (req: Request, res: Response): Promise<void> => 
     const { moverId } = req.params;
     const magicMover = await magicMoverService.endMission(moverId);
     res.status(200).send(magicMover);
-  } catch (error) {
-    res.status(400).send(error);
+  } catch (error:any) {
+    res.status(400).send({ message: error.message });
   }
 };
 
@@ -101,8 +121,8 @@ export const listTopMagicMovers = async (_req: Request, res: Response): Promise<
   try {
     const magicMovers = await magicMoverService.listTopMagicMovers();
     res.status(200).send(magicMovers);
-  } catch (error) {
-    res.status(400).send(error);
+  } catch (error:any) {
+    res.status(400).send({ message: error.message });
   }
 };
 
