@@ -10,6 +10,7 @@ export interface IMagicMover extends Document {
   questState: 'resting' | 'loading' | 'on-mission';
   completedMissions: number;
   loadedItems: Array<{ item: Types.ObjectId}>;
+  activityLog: Array<{ type: string; message: string; timestamp: Date }>;
 }
 
 /**
@@ -20,7 +21,8 @@ const MagicMoverSchema = new Schema<IMagicMover>({
   weightLimit: { type: Number, required: true },
   questState: { type: String, enum: ['resting', 'loading', 'on-mission'], default: 'resting' },
   completedMissions: { type: Number, default: 0 },
-  loadedItems: [{ item: { type: Schema.Types.ObjectId, ref: 'MagicItem' }}]
+  loadedItems: [{ item: { type: Schema.Types.ObjectId, ref: 'MagicItem' }}],
+  activityLog: [{ type: { type: String, required: true }, message: { type: String, required: true }, timestamp: { type: Date, default: Date.now } }]
 });
 
 /**

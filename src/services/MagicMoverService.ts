@@ -1,6 +1,6 @@
 import { injectable } from 'tsyringe';
 import { MagicMover, IMagicMover } from '../models/MagicMover';
-import {  MagicItem } from '../models/MagicItem';
+import {  IMagicItem, MagicItem } from '../models/MagicItem';
 import { Types } from 'mongoose';
 
 /**
@@ -83,11 +83,10 @@ async loadMagicMover(moverId: string, itemIds: string[]): Promise<IMagicMover | 
 
   // Update the Magic Mover's state to loading
   magicMover.questState = 'loading';
-
-  // Add the items to the Magic Mover's loadedItems
-  items.forEach(item => {
-    magicMover.loadedItems.push({ item: item._id as Types.ObjectId });
-  });
+  magicMover.activityLog.push({
+    type: magicMover.questState,
+    message: `Started loading for mover '${magicMover.name}' with items: ${items.map(item => item.name).join(', ')}`,
+    timestamp: new Date() });
 
   // Save the updated Magic Mover and return it
   return await magicMover.save();
@@ -101,7 +100,7 @@ async loadMagicMover(moverId: string, itemIds: string[]): Promise<IMagicMover | 
    */
   async startMission(moverId: string): Promise<IMagicMover | null> {
     try {
-      const magicMover = await MagicMover.findById(moverId);
+      const magicMover = await MagicMover.findById(moverId).populate('loadedItems.item');
 
       if (!magicMover) {
         throw new Error('Magic Mover not found');
@@ -112,8 +111,20 @@ async loadMagicMover(moverId: string, itemIds: string[]): Promise<IMagicMover | 
         throw new Error('Magic Mover is not in loading state');
       }
 
+    // Access the names of the loaded items
+    const itemNames = magicMover.loadedItems.map((loadedItem) => {
+      const item = loadedItem.item as unknown as IMagicItem;
+      return item.name;
+    });
+
       magicMover.questState = 'on-mission';
+      magicMover.activityLog.push({
+        type: magicMover.questState,
+        message: `Mover '${magicMover.name}' is now On-Mission with items: ${itemNames.join(', ')}`,
+        timestamp: new Date() });
+
       return await magicMover.save();
+
     } catch (error) {
       // Log the error or handle it accordingly
       throw new Error(`Failed to start mission: ${error}`);
@@ -128,7 +139,7 @@ async loadMagicMover(moverId: string, itemIds: string[]): Promise<IMagicMover | 
    */
   async endMission(moverId: string): Promise<IMagicMover | null> {
     try {
-      const magicMover = await MagicMover.findById(moverId);
+      const magicMover = await MagicMover.findById(moverId).populate('loadedItems.item');
 
       if (!magicMover) {
         throw new Error('Magic Mover not found');
@@ -138,8 +149,18 @@ async loadMagicMover(moverId: string, itemIds: string[]): Promise<IMagicMover | 
         throw new Error('Magic Mover is not currently on a mission');
       }
 
+    // Access the names of the loaded items
+    const itemNames = magicMover.loadedItems.map((loadedItem) => {
+      const item = loadedItem.item as unknown as IMagicItem;
+      return item.name;
+    });
+
       magicMover.questState = 'resting';
       magicMover.completedMissions += 1;
+      magicMover.activityLog.push({
+        type: magicMover.questState,
+        message: `Mover '${magicMover.name}' Done his mission with items: ${itemNames.join(', ')}`,
+        timestamp: new Date() });
 
       return await magicMover.save();
     } catch (error) {
