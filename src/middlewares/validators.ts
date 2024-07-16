@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 /**
  * Validation middleware for validating Magic Mover data.
@@ -23,7 +23,7 @@ export const validateMagicItem = [
  * @type {import('express-validator').ValidationChain[]}
  */
 export const validateLoadMagicMover = [
-  body('moverId').isMongoId().withMessage('Invalid mover ID'),
+  param('moverId').isMongoId().withMessage('Invalid mover ID'),
   body('itemIds').isArray().withMessage('Item IDs must be an array')
 ];
 
@@ -32,5 +32,5 @@ export const validateLoadMagicMover = [
  * @type {import('express-validator').ValidationChain[]}
  */
 export const validateMission = [
-  body('moverId').isMongoId().withMessage('Invalid mover ID')
+  param('moverId').isMongoId().withMessage('Invalid mover ID')
 ];

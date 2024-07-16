@@ -48,33 +48,7 @@ const router = Router();
  *       400:
  *         description: Bad request
  */
-
 router.get('/magic-movers/:moverId', getOneMagicMover);
-
-/**
- * @swagger
- * tags:
- *   name: MagicMovers
- *   description: API for managing magic movers
- */
-
-/**
- * @swagger
- * /magic-movers:
- *   get:
- *     summary: Get all magic movers
- *     tags: [MagicMovers]
- *     responses:
- *       200:
- *         description: List of all magic movers
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/MagicMover'
- */
-router.get('/magic-movers', getAllMagicMovers);
 
 /**
  * @swagger
@@ -204,12 +178,37 @@ router.post('/magic-movers/:moverId/start-mission', validateMission, startMissio
  *               $ref: '#/components/schemas/MagicMover'
  *       400:
  *         description: Bad request
- */
+*/
 router.post('/magic-movers/:moverId/end-mission', validateMission, endMission);
 
 /**
  * @swagger
- * /magic-movers/completed-missions:
+ * tags:
+ *   name: MagicMovers
+ *   description: API for managing magic movers
+ */
+
+/**
+ * @swagger
+ * /magic-movers:
+ *   get:
+ *     summary: Get all magic movers
+ *     tags: [MagicMovers]
+ *     responses:
+ *       200:
+ *         description: List of all magic movers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/MagicMover'
+ */
+router.get('/magic-movers', getAllMagicMovers);
+
+/**
+ * @swagger
+ * /magic-movers/top-movers:
  *   get:
  *     summary: Get list of top magic movers by completed missions
  *     tags: [MagicMovers]
@@ -223,6 +222,6 @@ router.post('/magic-movers/:moverId/end-mission', validateMission, endMission);
  *               items:
  *                 $ref: '#/components/schemas/MagicMover'
  */
-router.get('/magic-movers/completed-missions', listTopMagicMovers);
+router.get('/top-movers', listTopMagicMovers);
 
 export default router;
